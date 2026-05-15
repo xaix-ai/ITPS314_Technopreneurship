@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bento — Skip the line. Eat sooner.</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --green:      #1e6b3c;
+    --green-dark: #155230;
+    --green-btn:  #2d7a4f;
+    --black:      #111;
+    --dark-card:  #0f1f17;
+    --text:       #1a1a1a;
+    --muted:      #6b7280;
+    --border:     #e5e7eb;
+    --bg:         #f8faf8;
+    --bg-section: #f0f4f0;
+    --white:      #ffffff;
+    --radius:     14px;
+    --radius-sm:  8px;
+    --shadow:     0 1px 4px rgba(0,0,0,.07);
+    --shadow-md:  0 4px 20px rgba(0,0,0,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── UTILS ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 99px; padding: 4px 12px;
+    font-size: 12.5px; color: var(--muted);
+    background: var(--white);
+    font-family: 'Inter', sans-serif;
+  }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 58px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Sora', sans-serif; font-weight: 700;
+    font-size: 18px; color: var(--text); text-decoration: none;
+  }
+  .nav-logo .logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #4ade80, #16a34a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: var(--text); font-size: 14px;
+    font-weight: 500; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--green); }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .btn-ghost {
+    background: none; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--text);
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    transition: background .15s;
+  }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-primary {
+    background: var(--green); color: var(--white);
+    border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600;
+    padding: 8px 18px; border-radius: var(--radius-sm);
+    transition: background .15s, transform .1s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 24px 60px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 60px;
+  }
+  .hero-left { display: flex; flex-direction: column; gap: 22px; }
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(38px, 5vw, 56px);
+    font-weight: 800; line-height: 1.08; letter-spacing: -1.5px;
+  }
+  .hero h1 span { color: #6b7280; }
+  .hero p {
+    font-size: 16px; color: #4b5563; max-width: 430px; line-height: 1.65;
+  }
+  .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-hero-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: var(--white);
+    border: none; cursor: pointer; text-decoration: none;
+    font-size: 14.5px; font-weight: 600;
+    padding: 11px 22px; border-radius: var(--radius-sm);
+    transition: background .15s, transform .1s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-hero-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-hero-outline {
+    display: inline-flex; align-items: center;
+    background: none; color: var(--text);
+    border: 1.5px solid var(--border); cursor: pointer;
+    text-decoration: none;
+    font-size: 14.5px; font-weight: 600;
+    padding: 11px 22px; border-radius: var(--radius-sm);
+    transition: border-color .15s, background .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-hero-outline:hover { border-color: #9ca3af; background: var(--bg); }
+  .hero-trust {
+    display: flex; gap: 20px; align-items: center;
+    font-size: 13px; color: var(--muted);
+  }
+  .hero-trust span { display: flex; align-items: center; gap: 6px; }
+
+  /* Hero image */
+  .hero-right { position: relative; }
+  .hero-img-card {
+    border-radius: 18px; overflow: hidden;
+    background: #e8f5e9;
+    aspect-ratio: 1/.75;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+  .hero-img-card img { width: 100%; height: 100%; object-fit: cover; }
+  .orders-badge {
+    position: absolute; top: 14px; right: 14px;
+    background: white; border-radius: 99px;
+    padding: 6px 14px; font-size: 12.5px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.12);
+  }
+  .orders-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+
+  /* ── PARTNERS BAR ── */
+  .partners-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    background: var(--white);
+  }
+  .partners-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; gap: 32px;
+    flex-wrap: wrap;
+  }
+  .partners-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .partners-list {
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .partners-list span {
+    font-size: 13.5px; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .partners-list span::before { content: '·'; color: #d1d5db; font-size: 18px; }
+  .partners-list span:first-child::before { display: none; }
+
+  /* ── FEATURES ── */
+  .features-section {
+    background: var(--bg);
+    padding: 80px 24px;
+  }
+  .features-inner { max-width: 1100px; margin: 0 auto; }
+  .section-tag {
+    display: inline-block;
+    border: 1px solid var(--border); border-radius: 99px;
+    padding: 4px 12px; font-size: 12.5px; color: var(--muted);
+    background: var(--white); margin-bottom: 16px;
+  }
+  .section-heading {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800; letter-spacing: -1px; margin-bottom: 6px;
+  }
+  .section-sub { font-size: 15px; color: var(--muted); margin-bottom: 40px; }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .feature-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--bg-section);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 18px;
+  }
+  .feature-card h3 {
+    font-family: 'Sora', sans-serif; font-size: 16px;
+    font-weight: 700; margin-bottom: 6px;
+  }
+  .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    background: var(--bg-section);
+    padding: 80px 24px;
+  }
+  .how-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+  .how-img {
+    border-radius: 18px; overflow: hidden;
+    aspect-ratio: 4/5;
+    background: #d1fae5;
+    box-shadow: var(--shadow-md);
+  }
+  .how-img img { width: 100%; height: 100%; object-fit: cover; }
+  .how-right { display: flex; flex-direction: column; gap: 24px; }
+  .how-right h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 800; letter-spacing: -1px; line-height: 1.15;
+  }
+  .step-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    display: grid; grid-template-columns: 36px 1fr; gap: 14px;
+    align-items: start;
+  }
+  .step-num {
+    font-family: 'Sora', sans-serif; font-size: 18px;
+    font-weight: 700; color: #c4c9d0;
+  }
+  .step-body h4 {
+    font-family: 'Sora', sans-serif; font-size: 15px;
+    font-weight: 700; margin-bottom: 4px;
+  }
+  .step-body p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ── AUDIENCE CARDS ── */
+  .audience-section {
+    background: var(--white);
+    padding: 80px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .audience-grid {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .audience-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .audience-card:last-child {
+    background: var(--bg);
+  }
+  .audience-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .audience-tag { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .audience-card h3 {
+    font-family: 'Sora', sans-serif; font-size: 24px;
+    font-weight: 800; letter-spacing: -.5px;
+  }
+  .audience-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; flex: 1; }
+  .audience-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 600; color: var(--text);
+    text-decoration: none; margin-top: 4px;
+    transition: gap .15s;
+  }
+  .audience-link:hover { gap: 10px; }
+
+  /* ── PRICING ── */
+  .pricing-section {
+    background: var(--bg);
+    padding: 80px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .pricing-inner { max-width: 1100px; margin: 0 auto; }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 40px;
+  }
+  .pricing-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .pricing-card.featured {
+    border: 2px solid var(--green);
+    box-shadow: 0 4px 24px rgba(30,107,60,.12);
+  }
+  .pricing-plan { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .pricing-price {
+    font-family: 'Sora', sans-serif; font-size: 36px;
+    font-weight: 800; letter-spacing: -1px;
+  }
+  .pricing-note { font-size: 12.5px; color: var(--muted); margin-top: -8px; }
+  .pricing-divider { border: none; border-top: 1px solid var(--border); }
+  .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .pricing-features li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13.5px; color: var(--text);
+  }
+  .pricing-features li::before {
+    content: '✓'; color: var(--green); font-weight: 700; font-size: 13px;
+  }
+
+  /* ── CTA / PILOT ── */
+  .cta-section { padding: 60px 24px; background: var(--white); }
+  .cta-card {
+    max-width: 1100px; margin: 0 auto;
+    background: var(--dark-card);
+    border-radius: 22px;
+    padding: 60px 56px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+  .cta-left { display: flex; flex-direction: column; gap: 18px; }
+  .cta-left h2 {
+    font-family: 'Sora', sans-serif; color: var(--white);
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 800; letter-spacing: -1px; line-height: 1.15;
+  }
+  .cta-left p { font-size: 14.5px; color: #9ca3af; line-height: 1.65; }
+  .cta-note {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #6b7280;
+  }
+  /* Inquiry form */
+  .inquiry-form {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .inquiry-form h3 {
+    font-family: 'Sora', sans-serif; font-size: 16px;
+    font-weight: 700; margin-bottom: 4px;
+  }
+  .form-input {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-family: 'Inter', sans-serif;
+    color: var(--text);
+    transition: border-color .15s;
+    outline: none;
+    background: var(--white);
+  }
+  .form-input:focus { border-color: var(--green); }
+  .form-input::placeholder { color: #9ca3af; }
+  textarea.form-input { resize: vertical; min-height: 90px; }
+  .btn-submit {
+    width: 100%; padding: 12px;
+    background: var(--green); color: var(--white);
+    border: none; cursor: pointer;
+    font-size: 15px; font-weight: 600;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    transition: background .15s, transform .1s;
+  }
+  .btn-submit:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .footer-copy { font-size: 13px; color: var(--muted); }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    transition: color .15s;
+  }
+  .footer-links a:hover { color: var(--text); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { order: -1; }
+    .features-grid { grid-template-columns: 1fr; }
+    .how-inner { grid-template-columns: 1fr; }
+    .audience-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .cta-card { grid-template-columns: 1fr; padding: 36px 24px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon">🍱</div>
+      Bento
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">Features</a></li>
+      <li><a href="#">How it works</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">For schools</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-ghost">Sign in</button>
+      <button class="btn-primary">Get started</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-left">
+      <div class="badge"><span class="dot"></span> Live in 3 schools this term</div>
+      <h1>Skip the line.<br><span>Eat sooner.</span></h1>
+      <p>Bento is the smart canteen pre-order system for schools. Students order ahead and pick up — no lines, no chaos, no sold-out surprises.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn-hero-primary">Start ordering &rarr;</a>
+        <a href="#" class="btn-hero-outline">Become a school partner</a>
+      </div>
+      <div class="hero-trust">
+        <span>⏱ Avg pickup in 4 mins</span>
+        <span>◎ QR pickup verification</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-card">
+        <div class="orders-badge"><span class="dot"></span> 42 orders today</div>
+        🏫
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS BAR -->
+<div class="partners-bar">
+  <div class="partners-inner">
+    <span class="partners-label">Designed with:</span>
+    <div class="partners-list">
+      <span>Mapua HS Canteen</span>
+      <span>DLSU Manila Pilot</span>
+      <span>UST Snack Hub</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-inner">
+    <div class="section-tag">Built for everyone</div>
+    <h2 class="section-heading">A friendlier lunch break.</h2>
+    <p class="section-sub">Tools for students, sellers, and school admins — all in one place.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Mobile-first PWA</h3>
+        <p>Install on any phone. Works offline-ready.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🍽️</div>
+        <h3>Live menu</h3>
+        <p>See what's still in stock — updated in real time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3>Smart notifications</h3>
+        <p>Know exactly when your order is ready.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📷</div>
+        <h3>QR pickup</h3>
+        <p>Show your code at the counter — no name shouting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Auto inventory</h3>
+        <p>Sellers' stock deducts automatically per order.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Sales analytics</h3>
+        <p>Sellers track best-sellers, peak hours, revenue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="how-inner">
+    <div class="how-img">🧑‍🎓</div>
+    <div class="how-right">
+      <h2>Three taps, then it's lunch.</h2>
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h4>Browse &amp; pre-order</h4>
+          <p>Pick from the live menu. Pay through mock GCash, card, or wallet.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h4>Get your code</h4>
+          <p>We give you a unique pickup number and digital receipt.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h4>Walk up &amp; go</h4>
+          <p>When ready, scan/show your code at the counter. Done.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE CARDS -->
+<section class="audience-section">
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-tag">For students</div>
+      <h3>Order in seconds</h3>
+      <p>Live availability, saved favorites, order history, and one-tap reorder.</p>
+      <a href="#" class="audience-link">Preview dashboard &rarr;</a>
+    </div>
+    <div class="audience-card">
+      <div class="audience-tag">For canteens</div>
+      <h3>Run a tight kitchen</h3>
+      <p>Real-time inventory deductions, incoming orders, daily sales analytics.</p>
+      <a href="#" class="audience-link">Preview dashboard &rarr;</a>
+    </div>
+    <div class="audience-card">
+      <div class="audience-tag">For schools</div>
+      <h3>Stay in control</h3>
+      <p>Approve sellers, manage accounts, monitor reports and platform health.</p>
+      <a href="#" class="audience-link">Preview dashboard &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-tag">Business model</div>
+    <h2 class="section-heading">Simple, school-friendly pricing.</h2>
+    <p class="section-sub">We earn from school + seller subscriptions, with optional in-app advertising for local brands.<br>Students never pay extra.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-plan">Student</div>
+        <div class="pricing-price">Free</div>
+        <div class="pricing-note">Always free for students.</div>
+        <hr class="pricing-divider"/>
+        <ul class="pricing-features">
+          <li>Pre-order &amp; pickup</li>
+          <li>Order history</li>
+          <li>QR receipt</li>
+          <li>Push notifications</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-plan">Canteen Seller</div>
+        <div class="pricing-price">₱799/mo</div>
+        <div class="pricing-note">Per stall, billed monthly.</div>
+        <hr class="pricing-divider"/>
+        <ul class="pricing-features">
+          <li>Inventory &amp; menu management</li>
+          <li>Real-time orders</li>
+          <li>Sales analytics</li>
+          <li>Auto receipts</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-plan">School Partner</div>
+        <div class="pricing-price">Custom</div>
+        <div class="pricing-note">Annual subscription with onboarding.</div>
+        <hr class="pricing-divider"/>
+        <ul class="pricing-features">
+          <li>Multi-stall control</li>
+          <li>Admin dashboard</li>
+          <li>Account verification</li>
+          <li>Priority support</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-card">
+    <div class="cta-left">
+      <h2>Pilot a faster canteen at your school.</h2>
+      <p>We're seeking school partners to pilot a faster and more efficient canteen experience. Students get their lunch back. Sellers get better margins. Admins get visibility.</p>
+      <div class="cta-note">◎ Free 30-day pilot · No setup fee</div>
+    </div>
+    <div class="inquiry-form">
+      <h3>Partner inquiry</h3>
+      <input class="form-input" type="text" placeholder="Your name"/>
+      <input class="form-input" type="email" placeholder="Email"/>
+      <input class="form-input" type="text" placeholder="School name"/>
+      <textarea class="form-input" placeholder="Tell us about your canteen setup"></textarea>
+      <button class="btn-submit">Request pilot</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon" style="width:26px;height:26px;font-size:14px;">🍱</div>
+      Bento
+    </a>
+    <span class="footer-copy">© 2026 Bento. Made for hungry students.</span>
+    <nav class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
